@@ -19,6 +19,7 @@
                     <th>Email</th>
                     <th>Role</th>
                     <th>Verification status</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,9 +30,15 @@
                         <td>{{ student.email }}</td>
                         <td>{{ student.get_role_display }}</td>
                         <td>Pending Verification</td>
+                        <td>
+                            <form method="post" action="{% url 'verify_student' student.id %}">
+                                {% csrf_token %}
+                                <button type="submit">Verify Student</button>
+                            </form>
+                        </td>
                     </tr>
                 {% empty %}
-                    <tr><td colspan="5">No students are awaiting verification.</td></tr>
+                    <tr><td colspan="6">No students are awaiting verification.</td></tr>
                 {% endfor %}
             </tbody>
         </table>

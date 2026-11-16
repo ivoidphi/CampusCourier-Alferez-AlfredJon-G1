@@ -102,3 +102,41 @@ class RoleDashboardTests(TestCase):
 
         self.assertContains(response, pending.student_id)
         self.assertNotContains(response, admin.student_id)
+        self.assertContains(response, reverse("verify_student", args=[pending.pk]))
+
+    def test_admin_can_verify_student_with_post(self):
+        admin = self.create_user(CustomUser.Role.ADMIN)
+        student = self.create_user(CustomUser.Role.CUSTOMER)
+        self.client.force_login(admin)
+
+        response = self.client.post(reverse("verify_student", args=[student.pk]))
+
+        self.assertRedirects(response, reverse("admin_dashboard"))
+        student.refresh_from_db()
+        self.assertTrue(student.is_verified_student)
+
+    def test_verification_action_rejects_get(self):
+        admin = self.create_user(CustomUser.Role.ADMIN)
+        student = self.create_user(CustomUser.Role.CUSTOMER)
+        self.client.force_login(admin)
+
+        response = self.client.get(reverse("verify_student", args=[student.pk]))
+
+        self.assertEqual(response.status_code, 405)
+        student.refresh_from_db()
+        self.assertFalse(student.is_verified_student)
+
+    def test_non_admin_cannot_verify_student(self):
+        customer = self.create_user(CustomUser.Role.CUSTOMER)
+        student = self.create_user(CustomUser.Role.COURIER)
+        self.client.force_login(customer)
+
+        response = self.client.post(reverse("verify_student", args=[student.pk]))
+
+        self.assertRedirects(
+            response,
+            reverse("dashboard_redirect"),
+            fetch_redirect_response=False,
+        )
+        student.refresh_from_db()
+        self.assertFalse(student.is_verified_student)

@@ -1,17 +1,25 @@
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+from django.core.exceptions import ImproperlyConfigured
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get(
-    "DJANGO_SECRET_KEY",
-    "django-insecure-campus-courier-development-key-change-before-deployment",
-)
-DEBUG = os.environ.get("DJANGO_DEBUG", "true").lower() == "true"
+load_dotenv(BASE_DIR / ".env")
+
+SECRET_KEY = os.environ.get("SECRET_KEY")
+if not SECRET_KEY:
+    raise ImproperlyConfigured("Set SECRET_KEY in the environment or .env file.")
+
+DEBUG = os.environ.get("DEBUG", "false").lower() == "true"
 ALLOWED_HOSTS = [
     host.strip()
-    for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+    for host in os.environ.get(
+        "ALLOWED_HOSTS",
+        "localhost,127.0.0.1",
+    ).split(",")
     if host.strip()
 ]
 
@@ -57,10 +65,26 @@ ASGI_APPLICATION = "campuscourier.asgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get("DB_NAME", "postgres"),
+        "USER": os.environ.get("DB_USER"),
+        "PASSWORD": os.environ.get("DB_PASSWORD"),
+        "HOST": os.environ.get("DB_HOST"),
+        "PORT": os.environ.get("DB_PORT", "5432"),
+        "OPTIONS": {"sslmode": "require"},
+        "DISABLE_SERVER_SIDE_CURSORS": True,
     }
 }
+missing_database_settings = [
+    key
+    for key in ("USER", "PASSWORD", "HOST")
+    if not DATABASES["default"][key]
+]
+if missing_database_settings:
+    missing_settings = ", ".join(f"DB_{key}" for key in missing_database_settings)
+    raise ImproperlyConfigured(
+        f"Set the required PostgreSQL environment variables: {missing_settings}."
+    )
 
 AUTH_USER_MODEL = "accounts.CustomUser"
 

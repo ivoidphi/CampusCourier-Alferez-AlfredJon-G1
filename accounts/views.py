@@ -2,7 +2,8 @@ from functools import wraps
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
 
 from .forms import CampusRegistrationForm, StudentProfileUpdateForm
 from .models import CustomUser
@@ -79,6 +80,24 @@ def admin_dashboard_view(request):
         "accounts/admin_dashboard.html",
         {"pending_students": pending_students},
     )
+
+
+@role_required(CustomUser.Role.ADMIN)
+@require_POST
+def verify_student_view(request, user_id):
+    student = get_object_or_404(
+        CustomUser.objects.filter(
+            role__in=(CustomUser.Role.CUSTOMER, CustomUser.Role.COURIER)
+        ),
+        pk=user_id,
+    )
+    student.is_verified_student = True
+    student.save(update_fields=["is_verified_student"])
+    messages.success(
+        request,
+        f"{student.username} ({student.student_id}) has been verified.",
+    )
+    return redirect("admin_dashboard")
 
 
 @login_required

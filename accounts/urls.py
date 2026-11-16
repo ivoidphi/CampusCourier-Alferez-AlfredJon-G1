@@ -28,5 +28,10 @@ urlpatterns = [
         name="courier_dashboard",
     ),
     path("dashboard/admin/", views.admin_dashboard_view, name="admin_dashboard"),
+    path(
+        "verify-student/<int:user_id>/",
+        views.verify_student_view,
+        name="verify_student",
+    ),
     path("profile/", views.profile_view, name="profile"),
 ]
