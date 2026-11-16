@@ -70,15 +70,18 @@ def courier_dashboard_view(request):
 
 @role_required(CustomUser.Role.ADMIN)
 def admin_dashboard_view(request):
-    pending_students = (
-        CustomUser.objects.filter(is_verified_student=False)
-        .exclude(role=CustomUser.Role.ADMIN)
-        .order_by("date_joined")
+    students = CustomUser.objects.exclude(role=CustomUser.Role.ADMIN)
+    pending_students = students.filter(is_verified_student=False).order_by(
+        "date_joined"
     )
     return render(
         request,
         "accounts/admin_dashboard.html",
-        {"pending_students": pending_students},
+        {
+            "pending_students": pending_students,
+            "total_students": students.count(),
+            "verified_count": students.filter(is_verified_student=True).count(),
+        },
     )
 
 
@@ -91,12 +94,13 @@ def verify_student_view(request, user_id):
         ),
         pk=user_id,
     )
-    student.is_verified_student = True
-    student.save(update_fields=["is_verified_student"])
-    messages.success(
-        request,
-        f"{student.username} ({student.student_id}) has been verified.",
-    )
+    if not student.is_verified_student:
+        student.is_verified_student = True
+        student.save(update_fields=["is_verified_student"])
+        messages.success(
+            request,
+            f"Verified {student.display_name} ({student.student_id}).",
+        )
     return redirect("admin_dashboard")
 
 

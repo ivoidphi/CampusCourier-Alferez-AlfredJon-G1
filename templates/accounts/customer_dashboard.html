@@ -1,42 +1,42 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}Customer Dashboard | CampusCourier{% endblock %}
+{% block title %}Customer Dashboard — CampusCourier{% endblock %}
 
 {% block content %}
-    <h1>Welcome, {{ user.first_name|default:user.username }}</h1>
-    <p>Student ID: {{ user.student_id }}</p>
-    {% if user.is_verified_student %}
-        <p>Verification: <strong>Verified Student</strong></p>
-    {% else %}
-        <p>Verification: <strong>Pending Verification</strong></p>
-    {% endif %}
+<div class="page-header">
+    <div>
+        <h1>Hi, {{ user.display_name }}</h1>
+        <p class="subtitle">Student ID: {{ user.student_id }} &middot; {{ user.campus_building_or_dept|default:"Campus" }}</p>
+    </div>
+    <div>
+        {% if user.is_verified_student %}
+            <span class="badge badge-verified">Verified Student</span>
+        {% else %}
+            <span class="badge badge-pending">Pending Verification</span>
+        {% endif %}
+    </div>
+</div>
 
-    <nav aria-label="Customer actions">
-        <a href="#create-request">Create Delivery Request</a>
-        <a href="#active-orders">Active Orders</a>
-        <a href="#delivery-history">Delivery History</a>
-    </nav>
-    <section id="create-request">
-        <h2>Create a delivery request</h2>
-        <p>Delivery requests will be available in a future release.</p>
-    </section>
-    <section id="active-orders">
-        <h2>My Ongoing Campus Deliveries</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Pick-up point</th>
-                    <th>Drop-off point</th>
-                    <th>Item summary</th>
-                    <th>Courier assigned</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody><tr><td colspan="5">No active deliveries yet.</td></tr></tbody>
-        </table>
-    </section>
-    <section id="delivery-history">
-        <h2>Delivery History</h2>
-        <p>Completed deliveries will appear here.</p>
-    </section>
+<div class="grid-3">
+    <div class="card">
+        <div class="stat-label">Active Requests</div>
+        <div class="stat-value">0</div>
+    </div>
+    <div class="card">
+        <div class="stat-label">Completed Deliveries</div>
+        <div class="stat-value">0</div>
+    </div>
+    <div class="card">
+        <div class="stat-label">Account Role</div>
+        <div class="stat-value" style="font-size: 1.05rem;">{{ user.get_role_display }}</div>
+    </div>
+</div>
+
+<section class="card">
+    <div class="page-header" style="margin-bottom: 0.5rem;">
+        <h2>My Delivery Requests</h2>
+        <span class="subtitle">Next phase: Request creation</span>
+    </div>
+    <div class="empty-state">No active campus delivery requests yet.</div>
+</section>
 {% endblock %}

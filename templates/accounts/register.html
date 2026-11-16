@@ -1,13 +1,25 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}Register | CampusCourier{% endblock %}
+{% block title %}Create Account — CampusCourier{% endblock %}
 
 {% block content %}
-    <h1>Create a CampusCourier account</h1>
-    <p>Choose your primary student role. Accounts require campus verification.</p>
+<div class="auth-box card" style="max-width: 500px;">
+    <h2>Create a student account</h2>
+    <p class="subtitle" style="margin-bottom: 1.25rem;">Register as a customer or campus courier.</p>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Create account</button>
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}<span class="helptext">{{ field.help_text }}</span>{% endif %}
+                {{ field.errors }}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-block">Register</button>
     </form>
+    <p class="subtitle" style="margin-top: 1rem; text-align: center;">
+        Already registered? <a href="{% url 'login' %}" style="color: var(--accent);">Log in</a>
+    </p>
+</div>
 {% endblock %}

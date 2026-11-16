@@ -15,7 +15,7 @@ class CustomUserAdmin(UserAdmin):
         "is_staff",
     )
     list_filter = ("role", "is_verified_student", "is_staff")
-    search_fields = ("username", "student_id", "email")
+    search_fields = ("username", "student_id", "email", "first_name", "last_name")
     fieldsets = UserAdmin.fieldsets + (
         (
             "CampusCourier profile",

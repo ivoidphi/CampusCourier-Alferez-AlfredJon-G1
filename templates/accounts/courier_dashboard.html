@@ -1,42 +1,42 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}Courier Hub | CampusCourier{% endblock %}
+{% block title %}Courier Dashboard — CampusCourier{% endblock %}
 
 {% block content %}
-    <h1>Courier Hub — {{ user.first_name|default:user.username }}</h1>
-    <p>Student ID: {{ user.student_id }}</p>
-    {% if user.is_verified_student %}
-        <p>Verification: <strong>Verified Student</strong></p>
-    {% else %}
-        <p>Verification: <strong>Pending Verification</strong></p>
-    {% endif %}
+<div class="page-header">
+    <div>
+        <h1>Courier Hub</h1>
+        <p class="subtitle">{{ user.display_name }} ({{ user.student_id }})</p>
+    </div>
+    <div>
+        {% if user.is_verified_student %}
+            <span class="badge badge-verified">Verified Courier</span>
+        {% else %}
+            <span class="badge badge-pending">Pending Verification</span>
+        {% endif %}
+    </div>
+</div>
 
-    <nav aria-label="Courier actions">
-        <a href="#available-tasks">Browse Available Campus Tasks</a>
-        <a href="#active-deliveries">My Active Deliveries</a>
-        <a href="#earnings">Earnings &amp; Completed Runs</a>
-    </nav>
-    <section id="available-tasks">
-        <h2>Available Campus Delivery Requests</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Item</th>
-                    <th>Pick-up location</th>
-                    <th>Drop-off location</th>
-                    <th>Deadline</th>
-                    <th>Service fee</th>
-                </tr>
-            </thead>
-            <tbody><tr><td colspan="5">No available delivery requests yet.</td></tr></tbody>
-        </table>
-    </section>
-    <section id="active-deliveries">
-        <h2>My Active Deliveries</h2>
-        <p>Accepted deliveries will appear here.</p>
-    </section>
-    <section id="earnings">
-        <h2>Earnings &amp; Completed Runs</h2>
-        <p>Completed runs and earnings will appear here.</p>
-    </section>
+<div class="grid-3">
+    <div class="card">
+        <div class="stat-label">Ongoing Runs</div>
+        <div class="stat-value">0</div>
+    </div>
+    <div class="card">
+        <div class="stat-label">Completed Runs</div>
+        <div class="stat-value">0</div>
+    </div>
+    <div class="card">
+        <div class="stat-label">Total Earned</div>
+        <div class="stat-value">&#8369;0.00</div>
+    </div>
+</div>
+
+<section class="card">
+    <div class="page-header" style="margin-bottom: 0.5rem;">
+        <h2>Open Campus Tasks</h2>
+        <span class="subtitle">Next phase: Task acceptance</span>
+    </div>
+    <div class="empty-state">No open campus delivery tasks posted yet.</div>
+</section>
 {% endblock %}

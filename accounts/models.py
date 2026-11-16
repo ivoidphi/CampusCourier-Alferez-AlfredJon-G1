@@ -36,5 +36,15 @@ class CustomUser(AbstractUser):
 
     REQUIRED_FIELDS = ["email", "student_id", "contact_number"]
 
+    class Meta:
+        ordering = ["-date_joined"]
+        verbose_name = "Campus User"
+        verbose_name_plural = "Campus Users"
+
+    @property
+    def display_name(self):
+        full_name = self.get_full_name().strip()
+        return full_name or self.username
+
     def __str__(self):
-        return f"{self.username} ({self.student_id}) - {self.get_role_display()}"
+        return f"{self.display_name} ({self.student_id}) - {self.get_role_display()}"

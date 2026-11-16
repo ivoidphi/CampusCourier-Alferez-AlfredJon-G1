@@ -1,50 +1,69 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}Admin Panel | CampusCourier{% endblock %}
+{% block title %}Admin Dashboard — CampusCourier{% endblock %}
 
 {% block content %}
-    <h1>CampusCourier Admin Panel</h1>
-    <nav aria-label="Admin actions">
-        <a href="#verification-queue">Student Verification Queue</a>
-        <a href="#deliveries">All Campus Deliveries</a>
-        <a href="{% url 'admin:index' %}accounts/customuser/">User Directory</a>
-    </nav>
-    <section id="verification-queue">
-        <h2>Student Verification Queue</h2>
+<div class="page-header">
+    <div>
+        <h1>Admin Overview</h1>
+        <p class="subtitle">Manage student verification and campus accounts</p>
+    </div>
+    <a href="{% url 'admin:index' %}" class="btn btn-outline btn-sm">Django Admin</a>
+</div>
+
+<div class="grid-3">
+    <div class="card">
+        <div class="stat-label">Total Students</div>
+        <div class="stat-value">{{ total_students }}</div>
+    </div>
+    <div class="card">
+        <div class="stat-label">Verified Accounts</div>
+        <div class="stat-value">{{ verified_count }}</div>
+    </div>
+    <div class="card">
+        <div class="stat-label">Pending Queue</div>
+        <div class="stat-value">{{ pending_students|length }}</div>
+    </div>
+</div>
+
+<section class="card">
+    <h2>Pending Student Verifications</h2>
+    {% if pending_students %}
+    <div class="table-wrap">
         <table>
             <thead>
                 <tr>
-                    <th>Username</th>
+                    <th>Student</th>
                     <th>Student ID</th>
-                    <th>Email</th>
                     <th>Role</th>
-                    <th>Verification status</th>
+                    <th>Department / Building</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 {% for student in pending_students %}
                     <tr>
-                        <td>{{ student.username }}</td>
+                        <td>
+                            <strong>{{ student.display_name }}</strong><br>
+                            <span class="subtitle">{{ student.email }}</span>
+                        </td>
                         <td>{{ student.student_id }}</td>
-                        <td>{{ student.email }}</td>
                         <td>{{ student.get_role_display }}</td>
-                        <td>Pending Verification</td>
+                        <td>{{ student.campus_building_or_dept|default:"—" }}</td>
                         <td>
                             <form method="post" action="{% url 'verify_student' student.id %}">
                                 {% csrf_token %}
-                                <button type="submit">Verify Student</button>
+                                <button type="submit" class="btn btn-sm">Verify</button>
                             </form>
                         </td>
                     </tr>
                 {% empty %}
-                    <tr><td colspan="6">No students are awaiting verification.</td></tr>
                 {% endfor %}
             </tbody>
         </table>
-    </section>
-    <section id="deliveries">
-        <h2>All Campus Deliveries</h2>
-        <p>Delivery management will be available in a future release.</p>
-    </section>
+    </div>
+    {% else %}
+        <div class="empty-state">All registered students are verified.</div>
+    {% endif %}
+</section>
 {% endblock %}

@@ -1,13 +1,39 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}Student Profile | CampusCourier{% endblock %}
+{% block title %}My Profile — CampusCourier{% endblock %}
 
 {% block content %}
-    <h1>Student Profile</h1>
-    <p>Student ID: {{ user.student_id }}</p>
+<div class="auth-box card" style="max-width: 560px;">
+    <div class="profile-header">
+        {% if user.profile_photo %}
+            <img src="{{ user.profile_photo.url }}" alt="Profile photo" class="avatar">
+        {% else %}
+            <div class="avatar" style="display: flex; align-items: center; justify-content: center; font-weight: 600; color: var(--muted);">
+                {{ user.username|slice:":1"|upper }}
+            </div>
+        {% endif %}
+        <div>
+            <h2 style="margin-bottom: 0.15rem;">{{ user.display_name }}</h2>
+            <p class="subtitle">ID: {{ user.student_id }} &middot; {{ user.get_role_display }}</p>
+            <div style="margin-top: 0.35rem;">
+                {% if user.is_verified_student %}
+                    <span class="badge badge-verified">Verified Student</span>
+                {% else %}
+                    <span class="badge badge-pending">Pending Verification</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Save profile</button>
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {{ field.errors }}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn">Save changes</button>
     </form>
+</div>
 {% endblock %}

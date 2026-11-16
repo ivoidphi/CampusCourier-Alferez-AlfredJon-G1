@@ -1,12 +1,27 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}Log in | CampusCourier{% endblock %}
+{% block title %}Log in — CampusCourier{% endblock %}
 
 {% block content %}
-    <h1>Log in to CampusCourier</h1>
+<div class="auth-box card">
+    <h2>Welcome back</h2>
+    <p class="subtitle" style="margin-bottom: 1.25rem;">Sign in to your CampusCourier student account.</p>
+    {% if form.errors %}
+        <div class="alert alert-error" role="alert">Invalid username or password.</div>
+    {% endif %}
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Log in</button>
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {{ field.errors }}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-block">Log in</button>
     </form>
+    <p class="subtitle" style="margin-top: 1rem; text-align: center;">
+        No account yet? <a href="{% url 'register' %}" style="color: var(--accent);">Create one</a>
+    </p>
+</div>
 {% endblock %}

@@ -30,16 +30,19 @@ class CampusRegistrationForm(UserCreationForm):
         ]
 
     def clean_email(self):
-        email = self.cleaned_data["email"]
+        email = self.cleaned_data["email"].strip().lower()
         if CustomUser.objects.filter(email__iexact=email).exists():
             raise forms.ValidationError("This email is already registered.")
         return email
 
     def clean_student_id(self):
-        student_id = self.cleaned_data["student_id"]
+        student_id = self.cleaned_data["student_id"].strip()
         if CustomUser.objects.filter(student_id__iexact=student_id).exists():
             raise forms.ValidationError("This Student ID is already registered.")
         return student_id
+
+    def clean_contact_number(self):
+        return self.cleaned_data["contact_number"].strip()
 
 
 class StudentProfileUpdateForm(forms.ModelForm):
@@ -55,7 +58,7 @@ class StudentProfileUpdateForm(forms.ModelForm):
         ]
 
     def clean_email(self):
-        email = self.cleaned_data["email"]
+        email = self.cleaned_data["email"].strip().lower()
         if (
             CustomUser.objects.filter(email__iexact=email)
             .exclude(pk=self.instance.pk)
@@ -63,3 +66,6 @@ class StudentProfileUpdateForm(forms.ModelForm):
         ):
             raise forms.ValidationError("This email is already used by another student.")
         return email
+
+    def clean_contact_number(self):
+        return self.cleaned_data["contact_number"].strip()
