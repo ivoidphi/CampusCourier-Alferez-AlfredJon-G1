@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Dashboard | CampusCourier{% endblock %}
+
+{% block content %}
+    <h1>Welcome, {{ user.first_name|default:user.username }}</h1>
+    <p>Student ID: {{ user.student_id }}</p>
+    {% if user.is_verified_student %}
+        <p>Verification: <strong>Verified Student</strong></p>
+    {% else %}
+        <p>Verification: <strong>Pending Verification</strong></p>
+    {% endif %}
+
+    <nav aria-label="Customer actions">
+        <a href="#create-request">Create Delivery Request</a>
+        <a href="#active-orders">Active Orders</a>
+        <a href="#delivery-history">Delivery History</a>
+    </nav>
+    <section id="create-request">
+        <h2>Create a delivery request</h2>
+        <p>Delivery requests will be available in a future release.</p>
+    </section>
+    <section id="active-orders">
+        <h2>My Ongoing Campus Deliveries</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Pick-up point</th>
+                    <th>Drop-off point</th>
+                    <th>Item summary</th>
+                    <th>Courier assigned</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody><tr><td colspan="5">No active deliveries yet.</td></tr></tbody>
+        </table>
+    </section>
+    <section id="delivery-history">
+        <h2>Delivery History</h2>
+        <p>Completed deliveries will appear here.</p>
+    </section>
+{% endblock %}

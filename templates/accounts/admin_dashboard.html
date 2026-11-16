@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel | CampusCourier{% endblock %}
+
+{% block content %}
+    <h1>CampusCourier Admin Panel</h1>
+    <nav aria-label="Admin actions">
+        <a href="#verification-queue">Student Verification Queue</a>
+        <a href="#deliveries">All Campus Deliveries</a>
+        <a href="{% url 'admin:index' %}accounts/customuser/">User Directory</a>
+    </nav>
+    <section id="verification-queue">
+        <h2>Student Verification Queue</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Student ID</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Verification status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in pending_students %}
+                    <tr>
+                        <td>{{ student.username }}</td>
+                        <td>{{ student.student_id }}</td>
+                        <td>{{ student.email }}</td>
+                        <td>{{ student.get_role_display }}</td>
+                        <td>Pending Verification</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="5">No students are awaiting verification.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+    <section id="deliveries">
+        <h2>All Campus Deliveries</h2>
+        <p>Delivery management will be available in a future release.</p>
+    </section>
+{% endblock %}

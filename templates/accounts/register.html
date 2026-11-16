@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Register | CampusCourier{% endblock %}
+
+{% block content %}
+    <h1>Create a CampusCourier account</h1>
+    <p>Choose your primary student role. Accounts require campus verification.</p>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Create account</button>
+    </form>
+{% endblock %}
