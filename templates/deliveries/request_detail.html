@@ -8,7 +8,6 @@
         <h1>Delivery Request #{{ delivery.id }}</h1>
         <span class="badge badge-status">{{ delivery.get_status_display }}</span>
     </div>
-
     <section class="card">
         <dl class="detail-list">
             <div><dt>Item</dt><dd>{{ delivery.item_description }}</dd></div>
@@ -24,12 +23,31 @@
             <div><dt>Created At</dt><dd>{{ delivery.created_at|date:"M d, Y h:i A" }}</dd></div>
         </dl>
     </section>
-
     <div class="action-group">
         <a href="{% url 'deliveries:my_deliveries' %}" class="btn btn-outline">Back to List</a>
         {% if user == delivery.customer and delivery.status == "PENDING" %}
             <a href="{% url 'deliveries:edit_delivery' delivery.pk %}" class="btn">Edit</a>
             <a href="{% url 'deliveries:delete_delivery' delivery.pk %}" class="btn btn-danger">Delete</a>
+        {% endif %}
+        {% if user.role == "COURIER" and delivery.status == "PENDING" and delivery.customer != user %}
+            <form method="post" action="{% url 'deliveries:accept_delivery' delivery.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn">Accept Delivery</button>
+            </form>
+        {% endif %}
+        {% if user == delivery.courier and delivery.status == "ACCEPTED" %}
+            <form method="post" action="{% url 'deliveries:update_delivery_status' delivery.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="IN_TRANSIT">
+                <button type="submit" class="btn">Mark In Transit</button>
+            </form>
+        {% endif %}
+        {% if user == delivery.courier and delivery.status == "IN_TRANSIT" %}
+            <form method="post" action="{% url 'deliveries:update_delivery_status' delivery.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="DELIVERED">
+                <button type="submit" class="btn">Mark Delivered</button>
+            </form>
         {% endif %}
     </div>
 </div>

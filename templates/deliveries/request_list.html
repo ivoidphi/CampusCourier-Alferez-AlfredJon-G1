@@ -10,6 +10,8 @@
     </div>
     {% if user.role == "CUSTOMER" %}
         <a href="{% url 'deliveries:create_delivery' %}" class="btn">New Delivery Request</a>
+    {% elif user.role == "COURIER" %}
+        <a href="{% url 'deliveries:available_deliveries' %}" class="btn">Browse Open Jobs</a>
     {% endif %}
 </div>
 

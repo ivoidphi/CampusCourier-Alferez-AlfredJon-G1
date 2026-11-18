@@ -1,5 +1,9 @@
+from decimal import Decimal
+
 from django.test import TestCase
 from django.urls import reverse
+
+from deliveries.models import DeliveryRequest
 
 from .forms import CampusRegistrationForm
 from .models import CustomUser
@@ -108,6 +112,43 @@ class RoleDashboardTests(TestCase):
         response = self.client.get(reverse("dashboard_redirect"))
 
         self.assertRedirects(response, reverse("courier_dashboard"))
+
+    def test_customer_dashboard_displays_own_requests_and_counts(self):
+        customer = self.create_user(CustomUser.Role.CUSTOMER)
+        other_customer = self.create_user(
+            CustomUser.Role.CUSTOMER,
+            suffix="-other",
+        )
+        pending = DeliveryRequest.objects.create(
+            customer=customer,
+            item_description="Campus coffee",
+            pickup_location="Canteen",
+            dropoff_location="Library",
+            delivery_fee=Decimal("25.00"),
+        )
+        DeliveryRequest.objects.create(
+            customer=customer,
+            item_description="Completed package",
+            pickup_location="Bookstore",
+            dropoff_location="Engineering",
+            delivery_fee=Decimal("30.00"),
+            status=DeliveryRequest.Status.DELIVERED,
+        )
+        DeliveryRequest.objects.create(
+            customer=other_customer,
+            item_description="Another student's request",
+            pickup_location="Canteen",
+            dropoff_location="Library",
+            delivery_fee=Decimal("25.00"),
+        )
+        self.client.force_login(customer)
+
+        response = self.client.get(reverse("customer_dashboard"))
+
+        self.assertContains(response, pending.item_description)
+        self.assertNotContains(response, "Another student's request")
+        self.assertEqual(response.context["active_request_count"], 1)
+        self.assertEqual(response.context["completed_delivery_count"], 1)
 
     def test_home_redirects_to_login_for_anonymous_visitors(self):
         response = self.client.get(reverse("home"))
