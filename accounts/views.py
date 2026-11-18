@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
+from deliveries.models import DeliveryRequest
+
 from .forms import CampusRegistrationForm, StudentProfileUpdateForm
 from .models import CustomUser
 
@@ -60,7 +62,25 @@ def dashboard_redirect_view(request):
 
 @role_required(CustomUser.Role.CUSTOMER)
 def customer_dashboard_view(request):
-    return render(request, "accounts/customer_dashboard.html")
+    deliveries = DeliveryRequest.objects.filter(customer=request.user)
+    active_statuses = (
+        DeliveryRequest.Status.PENDING,
+        DeliveryRequest.Status.ACCEPTED,
+        DeliveryRequest.Status.IN_TRANSIT,
+    )
+    return render(
+        request,
+        "accounts/customer_dashboard.html",
+        {
+            "deliveries": deliveries[:5],
+            "active_request_count": deliveries.filter(
+                status__in=active_statuses
+            ).count(),
+            "completed_delivery_count": deliveries.filter(
+                status=DeliveryRequest.Status.DELIVERED
+            ).count(),
+        },
+    )
 
 
 @role_required(CustomUser.Role.COURIER)

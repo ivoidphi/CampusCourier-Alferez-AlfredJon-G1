@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Available Deliveries — CampusCourier{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Open Campus Requests</h1>
+        <p class="subtitle">Browse pending requests from other campus users.</p>
+    </div>
+    <a href="{% url 'deliveries:my_deliveries' %}" class="btn btn-outline">My Deliveries</a>
+</div>
+
+{% if deliveries %}
+    <div class="card table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Item</th>
+                    <th>Pickup</th>
+                    <th>Drop-off</th>
+                    <th>Fee</th>
+                    <th>Customer</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in deliveries %}
+                    <tr>
+                        <td>#{{ item.id }}</td>
+                        <td>{{ item.item_description }}</td>
+                        <td>{{ item.pickup_location }}</td>
+                        <td>{{ item.dropoff_location }}</td>
+                        <td>&#8369;{{ item.delivery_fee }}</td>
+                        <td>{{ item.customer.display_name }}</td>
+                        <td>
+                            <div class="action-group">
+                                <a href="{% url 'deliveries:delivery_detail' item.pk %}" class="btn btn-sm btn-outline">Details</a>
+                                <form method="post" action="{% url 'deliveries:accept_delivery' item.pk %}">
+                                    {% csrf_token %}
+                                    {% if user.role == "COURIER" %}
+                                        <button type="submit" class="btn btn-sm">Accept Job</button>
+                                    {% endif %}
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="card empty-state">No pending delivery requests available right now.</div>
+{% endif %}
+{% endblock %}

@@ -35,8 +35,8 @@
 <section class="card">
     <div class="page-header" style="margin-bottom: 0.5rem;">
         <h2>Open Campus Tasks</h2>
-        <span class="subtitle">Next phase: Task acceptance</span>
+        <a href="{% url 'deliveries:available_deliveries' %}" class="btn">Browse Open Jobs</a>
     </div>
-    <div class="empty-state">No open campus delivery tasks posted yet.</div>
+    <p class="subtitle">Browse pending requests and track your claimed deliveries.</p>
 </section>
 {% endblock %}

@@ -20,11 +20,11 @@
 <div class="grid-3">
     <div class="card">
         <div class="stat-label">Active Requests</div>
-        <div class="stat-value">0</div>
+        <div class="stat-value">{{ active_request_count }}</div>
     </div>
     <div class="card">
         <div class="stat-label">Completed Deliveries</div>
-        <div class="stat-value">0</div>
+        <div class="stat-value">{{ completed_delivery_count }}</div>
     </div>
     <div class="card">
         <div class="stat-label">Account Role</div>
@@ -35,8 +35,43 @@
 <section class="card">
     <div class="page-header" style="margin-bottom: 0.5rem;">
         <h2>My Delivery Requests</h2>
-        <span class="subtitle">Next phase: Request creation</span>
+        <div class="action-group">
+            <a href="{% url 'deliveries:create_delivery' %}" class="btn">New Request</a>
+            <a href="{% url 'deliveries:available_deliveries' %}" class="btn btn-outline">Browse Campus Requests</a>
+            <a href="{% url 'deliveries:my_deliveries' %}" class="btn btn-outline">View All</a>
+        </div>
     </div>
-    <div class="empty-state">No active campus delivery requests yet.</div>
+    {% if deliveries %}
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Pickup</th>
+                        <th>Drop-off</th>
+                        <th>Fee</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for delivery in deliveries %}
+                        <tr>
+                            <td>{{ delivery.item_description }}</td>
+                            <td>{{ delivery.pickup_location }}</td>
+                            <td>{{ delivery.dropoff_location }}</td>
+                            <td>&#8369;{{ delivery.delivery_fee }}</td>
+                            <td><span class="badge badge-status">{{ delivery.get_status_display }}</span></td>
+                            <td>
+                                <a href="{% url 'deliveries:delivery_detail' delivery.pk %}" class="btn btn-sm btn-outline">View</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">No delivery requests yet. Create one to get started.</div>
+    {% endif %}
 </section>
 {% endblock %}

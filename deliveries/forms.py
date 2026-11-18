@@ -15,29 +15,21 @@ class DeliveryRequestForm(forms.ModelForm):
         ]
         widgets = {
             "item_description": forms.TextInput(
-                attrs={
-                    "placeholder": "e.g., 2 Iced Coffees from Canteen",
-                }
+                attrs={"placeholder": "e.g., 2 Iced Coffees from Canteen"}
             ),
             "pickup_location": forms.TextInput(
-                attrs={"placeholder": "e.g., Main Canteen"},
+                attrs={"placeholder": "e.g., Main Canteen"}
             ),
             "dropoff_location": forms.TextInput(
-                attrs={"placeholder": "e.g., NGE Building Room 304"},
+                attrs={"placeholder": "e.g., NGE Building Room 304"}
             ),
             "delivery_fee": forms.NumberInput(
-                attrs={
-                    "step": "0.01",
-                    "min": "10",
-                    "placeholder": "e.g., 25.00",
-                }
+                attrs={"step": "0.01", "min": "10", "placeholder": "e.g., 25.00"}
             ),
             "notes": forms.Textarea(
                 attrs={
                     "rows": 3,
-                    "placeholder": (
-                        "Optional instructions (landmarks, contact note, fragile item, etc.)"
-                    ),
+                    "placeholder": "Optional instructions (landmarks, contact note, fragile item, etc.)",
                 }
             ),
         }
@@ -52,7 +44,6 @@ class DeliveryRequestForm(forms.ModelForm):
         cleaned_data = super().clean()
         pickup = cleaned_data.get("pickup_location", "").strip()
         dropoff = cleaned_data.get("dropoff_location", "").strip()
-
         if pickup and dropoff and pickup.casefold() == dropoff.casefold():
             raise forms.ValidationError(
                 "Pickup location and drop-off location cannot be the same."
