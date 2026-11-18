@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Delivery Requests — CampusCourier{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>{% if user.role == "ADMIN" %}Delivery Requests{% else %}My Delivery Requests{% endif %}</h1>
+        <p class="subtitle">View delivery details and track request status.</p>
+    </div>
+    {% if user.role == "CUSTOMER" %}
+        <a href="{% url 'deliveries:create_delivery' %}" class="btn">New Delivery Request</a>
+    {% endif %}
+</div>
+
+{% if deliveries %}
+    <div class="card table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Item</th>
+                    <th>Pickup</th>
+                    <th>Drop-off</th>
+                    <th>Fee</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in deliveries %}
+                    <tr>
+                        <td>#{{ item.id }}</td>
+                        <td>{{ item.item_description }}</td>
+                        <td>{{ item.pickup_location }}</td>
+                        <td>{{ item.dropoff_location }}</td>
+                        <td>&#8369;{{ item.delivery_fee }}</td>
+                        <td><span class="badge badge-status">{{ item.get_status_display }}</span></td>
+                        <td>{{ item.created_at|date:"M d, Y h:i A" }}</td>
+                        <td>
+                            <div class="action-group">
+                                <a href="{% url 'deliveries:delivery_detail' item.pk %}" class="btn btn-sm btn-outline">View</a>
+                                {% if user == item.customer and item.status == "PENDING" %}
+                                    <a href="{% url 'deliveries:edit_delivery' item.pk %}" class="btn btn-sm btn-outline">Edit</a>
+                                    <a href="{% url 'deliveries:delete_delivery' item.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="card empty-state">
+        <p>No delivery requests found yet.</p>
+        {% if user.role == "CUSTOMER" %}
+            <a href="{% url 'deliveries:create_delivery' %}" class="btn">Create a request</a>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

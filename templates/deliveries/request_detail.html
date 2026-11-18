@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Delivery #{{ delivery.id }} — CampusCourier{% endblock %}
+
+{% block content %}
+<div class="form-page delivery-detail">
+    <div class="page-header">
+        <h1>Delivery Request #{{ delivery.id }}</h1>
+        <span class="badge badge-status">{{ delivery.get_status_display }}</span>
+    </div>
+
+    <section class="card">
+        <dl class="detail-list">
+            <div><dt>Item</dt><dd>{{ delivery.item_description }}</dd></div>
+            <div><dt>Pickup Location</dt><dd>{{ delivery.pickup_location }}</dd></div>
+            <div><dt>Drop-off Location</dt><dd>{{ delivery.dropoff_location }}</dd></div>
+            <div><dt>Delivery Fee</dt><dd>&#8369;{{ delivery.delivery_fee }}</dd></div>
+            <div><dt>Notes</dt><dd>{{ delivery.notes|default:"None" }}</dd></div>
+            <div><dt>Customer</dt><dd>{{ delivery.customer.display_name }}</dd></div>
+            <div>
+                <dt>Assigned Courier</dt>
+                <dd>{{ delivery.courier.display_name|default:"Waiting for courier..." }}</dd>
+            </div>
+            <div><dt>Created At</dt><dd>{{ delivery.created_at|date:"M d, Y h:i A" }}</dd></div>
+        </dl>
+    </section>
+
+    <div class="action-group">
+        <a href="{% url 'deliveries:my_deliveries' %}" class="btn btn-outline">Back to List</a>
+        {% if user == delivery.customer and delivery.status == "PENDING" %}
+            <a href="{% url 'deliveries:edit_delivery' delivery.pk %}" class="btn">Edit</a>
+            <a href="{% url 'deliveries:delete_delivery' delivery.pk %}" class="btn btn-danger">Delete</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
